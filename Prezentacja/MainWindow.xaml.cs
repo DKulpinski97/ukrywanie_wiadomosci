@@ -23,7 +23,7 @@ namespace UkrywanieWiadomosci
         private readonly WskaznikiDoGUISerwis _wskaznikiGUI;
         private readonly IObslugaPlikow _obslugaPlikow;
         private readonly IWeryfikacjaDanych _weryfikacjaDanych;
-        public MainWindow(WskaznikiDoGUISerwis wskaznikiGUI,IObslugaPlikow obslugaPlikow,IWeryfikacjaDanych weryfikacjaDanych)
+        public MainWindow(WskaznikiDoGUISerwis wskaznikiGUI, IObslugaPlikow obslugaPlikow, IWeryfikacjaDanych weryfikacjaDanych)
         {
             _obslugaPlikow = obslugaPlikow;
             InitializeComponent();
@@ -48,6 +48,17 @@ namespace UkrywanieWiadomosci
             if (tmp.Succes == false)
             {
                 MessageBox.Show(tmp.komunikat);
+            }
+            else
+            {
+                try
+                {
+                    var BitMapa = _obslugaPlikow.WczytajObrazekPNG();
+                }
+                catch(Exception ex) 
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
         private void przypiszGUI()

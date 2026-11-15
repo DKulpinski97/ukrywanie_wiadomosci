@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Controls;
@@ -36,5 +37,22 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
             openFolderDialog.ShowDialog();
             _zarzadzanieGui.PrzypiszWartoscSciezkaDoZapisuTextBox(openFolderDialog.FolderName);
         }
+        public Bitmap WczytajObrazekPNG()
+        {
+            var sciezka = _zarzadzanieGui.PobierzWartoscPNGTextBox();
+
+            byte[] bytes = File.ReadAllBytes(sciezka);
+            try
+            {
+                using var stream = new MemoryStream(bytes);
+                using var temp = System.Drawing.Image.FromStream(stream, true, true);
+                return new Bitmap(temp);
+            }
+            catch
+            {
+                throw new Exception("Błąd krytyczny najprawdopodobniej to nie PNG");
+            }
+        }
+
     }
 }
