@@ -1,25 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
+using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
 using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 
 namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
 {
-    public class WeryfikacjaDanychSerwiy:IWeryfikacjaDanych
+    public class WeryfikacjaDanychSerwiy : IWeryfikacjaDanych
     {
-    private readonly IZarzadzanieGui _zarzadzanieGui;
-        public WeryfikacjaDanychSerwiy(IZarzadzanieGui zarzadzanieGui)
+        private readonly IZarzadzanieGui _zarzadzanieGui;
+        private readonly IObslugaPlikow _obslugaPlikow;
+        public WeryfikacjaDanychSerwiy(IZarzadzanieGui zarzadzanieGui,IObslugaPlikow obslugaPlikow)
         {
             _zarzadzanieGui = zarzadzanieGui;
+            _obslugaPlikow = obslugaPlikow;
         }
 
         public (bool Succes, string komunikat) WeryfikacjaDanychPoczaatkowych()
         {
             var sprawdzenieMiejsceObrazu = SprawdzenieSciezkiPNG();
-            if (sprawdzenieMiejsceObrazu.Succes==false)
+            Bitmap bitmap;
+            if (sprawdzenieMiejsceObrazu.Succes == false)
             {
                 return (false, "Nie wybrano pliku PNG.");
+            }
+            try
+            {
+                 bitmap = _obslugaPlikow.WczytajObrazekPNG();
+            }
+            catch(Exception ex)
+            {
+                return (false, ex.Message);
             }
             if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
             {
@@ -29,9 +42,19 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
                     return sprawdzenieMiejscaZapisu;
                 }
                 var sprawdzenieMiejscaWiadomosci = SprawdzCzyWiadomoscJestPusta();
-                if (sprawdzenieMiejscaWiadomosci.Succes == true) 
+                if (sprawdzenieMiejscaWiadomosci.Succes == true)
                 {
-                    return (false,"Nie podano wiadomości do ukrycia");
+                    return (false, "Nie podano wiadomości do ukrycia");
+                }
+                long ileZnaków = _zarzadzanieGui.PobierzWartoscWiadomoscTextBox().Length;
+                long ileBitowDoUkrycia = ileZnaków * 2 * 8;
+                int szerokosc = bitmap.Width;
+                int wysokosc = bitmap.Height;
+
+                long liczbaPikseli = (long)szerokosc * wysokosc;
+                if ((ileBitowDoUkrycia + 4 * 8) >= liczbaPikseli)
+                {
+                    return (false, "Obrazek jest za mały by ukryć wiadomość");
                 }
             }
             else
@@ -42,15 +65,15 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
                     return sprawdzenieMiejscaWiadomosci;
                 }
             }
-            if(_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox()==false)
+            if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == false)
             {
                 var sprawdzSeed = SprawdzCzySeedcJestPusta();
-                if(sprawdzSeed.Succes == false)
+                if (sprawdzSeed.Succes == false)
                 {
                     return sprawdzSeed;
                 }
             }
-            
+
             return (true, "");
         }
         private (bool Succes, string komunikat) SprawdzenieSciezkiPNG()
