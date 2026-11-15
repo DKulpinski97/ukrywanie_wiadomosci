@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
+using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
 using UkrywanieWiadomosci.Prezentacja.enumy;
 using UkrywanieWiadomosci.Prezentacja.Wskazniki;
 
@@ -19,11 +21,34 @@ namespace UkrywanieWiadomosci
     public partial class MainWindow : Window
     {
         private readonly WskaznikiDoGUISerwis _wskaznikiGUI;
-        public MainWindow(WskaznikiDoGUISerwis wskaznikiGUI)
+        private readonly IObslugaPlikow _obslugaPlikow;
+        private readonly IWeryfikacjaDanych _weryfikacjaDanych;
+        public MainWindow(WskaznikiDoGUISerwis wskaznikiGUI,IObslugaPlikow obslugaPlikow,IWeryfikacjaDanych weryfikacjaDanych)
         {
+            _obslugaPlikow = obslugaPlikow;
             InitializeComponent();
             _wskaznikiGUI = wskaznikiGUI;
+            _weryfikacjaDanych = weryfikacjaDanych;
             przypiszGUI();
+        }
+
+        private void WyborPNGButton_Click(object sender, RoutedEventArgs e)
+        {
+            _obslugaPlikow.PrzypiszSciezkePNG();
+        }
+
+        private void WyborSciezkiZapisuButton_Click(object sender, RoutedEventArgs e)
+        {
+            _obslugaPlikow.PrzypiszSciezkeDoMiejscaZapisu();
+        }
+
+        private void RozpocznijButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tmp = _weryfikacjaDanych.WeryfikacjaDanychPoczaatkowych();
+            if (tmp.Succes == false)
+            {
+                MessageBox.Show(tmp.komunikat);
+            }
         }
         private void przypiszGUI()
         {
@@ -42,21 +67,6 @@ namespace UkrywanieWiadomosci
             _wskaznikiGUI.Ustaw(EnumDoGUI.IdRadioBox.OdczytacRadioBox, this.OdczytacRadioBox);
             _wskaznikiGUI.Ustaw(EnumDoGUI.IdRadioBox.StandardRadioBox, this.StandardRadioBox);
             _wskaznikiGUI.Ustaw(EnumDoGUI.IdRadioBox.LosowyRadioBox, this.LosowyRadioBox);
-        }
-
-        private void WyborPNGButton_Click(object sender, RoutedEventArgs e)
-        {
-            var a = _wskaznikiGUI;
-        }
-
-        private void WyborSciezkiZapisuButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void RozpocznijButton_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

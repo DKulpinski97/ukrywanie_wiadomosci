@@ -20,7 +20,7 @@ namespace UkrywanieWiadomosci.Prezentacja.Serwisy
         {
             PrzypiszWartoscTextBox(_wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoPNGTextbox), text);
         }
-        public string PobierzWartoscPNGTextBox(string text)
+        public string PobierzWartoscPNGTextBox()
         {
             return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoPNGTextbox).Text;
         }
@@ -28,17 +28,17 @@ namespace UkrywanieWiadomosci.Prezentacja.Serwisy
         {
             PrzypiszWartoscTextBox(_wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoZapisuTextbox), text);
         }
-        public string PobierzWartoscSciezkaDoZapisuTextBox(string text)
+        public string PobierzWartoscSciezkaDoZapisuTextBox()
         {
-            return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoPNGTextbox).Text;
+            return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoZapisuTextbox).Text;
         }
-        public void PrzypiszWartoscWiadomoscTextBox(string text)
+        public string PobierzWartoscWiadomoscTextBox()
         {
-            PrzypiszWartoscTextBox(_wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoZapisuTextbox), text);
+            return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.WiadomoscTextBox).Text;
         }
-        public string PobierzWartoscWiadomoscTextBox(string text)
+        public string PobierzWartoscSeedTextBox()
         {
-            return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoPNGTextbox).Text;
+            return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SeedTextBox).Text;
         }
         //Obsługa label
         public void PrzypiszWartoscStatusLabel(string text)
