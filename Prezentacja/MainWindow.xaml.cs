@@ -18,8 +18,8 @@ namespace UkrywanieWiadomosci
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly WskaznikiDoGUI _wskaznikiGUI;
-        public MainWindow(WskaznikiDoGUI wskaznikiGUI)
+        private readonly WskaznikiDoGUISerwis _wskaznikiGUI;
+        public MainWindow(WskaznikiDoGUISerwis wskaznikiGUI)
         {
             InitializeComponent();
             _wskaznikiGUI = wskaznikiGUI;

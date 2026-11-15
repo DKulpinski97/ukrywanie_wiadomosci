@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using UkrywanieWiadomosci.Prezentacja.Interfejsy;
+using UkrywanieWiadomosci.Prezentacja.Serwisy;
 using UkrywanieWiadomosci.Prezentacja.Wskazniki;
 
 namespace UkrywanieWiadomosci
@@ -28,7 +30,8 @@ namespace UkrywanieWiadomosci
             // Application
 
             //Domain
-            services.AddSingleton<WskaznikiDoGUI>();
+            services.AddSingleton<WskaznikiDoGUISerwis>();
+            services.AddTransient<IZarzadzanieGui, ZarzadzanieGuiSerwis>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

@@ -3,7 +3,7 @@ using static UkrywanieWiadomosci.Prezentacja.enumy.EnumDoGUI;
 
 namespace UkrywanieWiadomosci.Prezentacja.Wskazniki
 {
-    public class WskaznikiDoGUI
+    public class WskaznikiDoGUISerwis
     {
         private Dictionary<IdLabel, Label> Labels = new();
         private Dictionary<IdTextBox, TextBox> TextBoxes = new();
