@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.Data;
 using System.Windows;
+using UkrywanieWiadomosci.Prezentacja.Wskazniki;
 
 namespace UkrywanieWiadomosci
 {
@@ -29,7 +28,7 @@ namespace UkrywanieWiadomosci
             // Application
 
             //Domain
-
+            services.AddSingleton<WskaznikiDoGUI>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

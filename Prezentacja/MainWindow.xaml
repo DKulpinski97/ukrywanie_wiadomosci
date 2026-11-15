@@ -35,14 +35,14 @@
 
         <TextBox x:Name="SciezkaDoPNGTextbox" Grid.Row="1" Grid.Column="0" IsReadOnly="True" Margin="0,0,10,5"/>
 
-        <Button x:Name="WyborPNGButton" Content="Wybierz plik PNG" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10"/>
+        <Button x:Name="WyborPNGButton" Content="Wybierz plik PNG" Grid.Row="2" Grid.Column="0" Margin="0,0,10,10" Click="WyborPNGButton_Click"/>
 
         <!-- Ścieżka zapisu -->
         <Label Content="Ścieżka do miejsca zapisu" Grid.Row="3" Grid.Column="0"/>
 
         <TextBox x:Name="SciezkaDoZapisuTextbox" Grid.Row="4" Grid.Column="0" IsReadOnly="True" Margin="0,0,10,61"/>
 
-        <Button x:Name="WyborSciezkiZapisuButton" Content="Wybierz miejsce zapisu obrazu" Grid.Row="4" Grid.Column="0" Margin="0,29,10,25"/>
+        <Button x:Name="WyborSciezkiZapisuButton" Content="Wybierz miejsce zapisu obrazu" Grid.Row="4" Grid.Column="0" Margin="0,29,10,25" Click="WyborSciezkiZapisuButton_Click"/>
 
         <!-- Wiadomość -->
         <Label Content="Wiadomość" Grid.Row="5" Grid.Column="0" VerticalAlignment="Top" Height="31"/>
@@ -74,7 +74,7 @@
         </GroupBox>
 
         <!-- Przycisk rozpoczęcia -->
-        <Button x:Name="RozpocznijButton" Content="Rozpocznij" Grid.Row="7" Grid.Column="1" VerticalAlignment="Top" Height="40"/>
+        <Button x:Name="RozpocznijButton" Content="Rozpocznij" Grid.Row="7" Grid.Column="1" VerticalAlignment="Top" Height="40" Click="RozpocznijButton_Click"/>
 
         <!-- Status -->
         <Label Content="Status:" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
