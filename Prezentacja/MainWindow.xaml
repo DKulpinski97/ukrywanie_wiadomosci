@@ -82,8 +82,8 @@
         <Label x:Name="StatusLabel" Content="Oczekiwanie na konfigurację" Grid.Row="8" Grid.Column="1"/>
 
         <!-- Postęp -->
-        <Label Content="Który znak:" Grid.Row="9" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+        <Label Content="Który bit:" Grid.Row="9" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
 
-        <Label x:Name="KtoryZnak" Content="0/0" Grid.Row="9"  Grid.Column="1"/>
+        <Label x:Name="KtoryBit" Content="0/0" Grid.Row="9"  Grid.Column="1"/>
     </Grid>
 </Window>

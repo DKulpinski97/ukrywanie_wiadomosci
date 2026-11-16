@@ -52,15 +52,18 @@ namespace UkrywanieWiadomosci
 
         private void RozpocznijButton_Click(object sender, RoutedEventArgs e)
         {
+            _zarzadzanieGui.PrzypiszWartoscStatusLabel("Sprawdzanie danych początkowych");
             var tmp = _weryfikacjaDanych.WeryfikacjaDanychPoczatkowych();
             if (tmp.Succes == false)
             {
+                _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na poprawe danych");
                 MessageBox.Show(tmp.komunikat);
             }
             else
             {
                 if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
                 {
+                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Ukrywam wiadomość");
                     Bitmap wynik;
                     if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
                     {
@@ -70,11 +73,13 @@ namespace UkrywanieWiadomosci
                     {
                         wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaLosowa();
                     }
+                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na nowe polecenie");
                     _obslugaPlikow.ZapisNowegoObrazka(wynik);
                     MessageBox.Show("Obraz zapisany");
                 }
                 else
                 {
+                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Odczytuje dane");
                     string wiadomosc="";
                     if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
                     {
@@ -84,6 +89,7 @@ namespace UkrywanieWiadomosci
                     {
                         wiadomosc = _kontrolaProcesuUkrywania.KontrolaOdczytuLosowo();
                     }
+                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na nowe polecenie");
                     _zarzadzanieGui.PrzypiszWartoscWiadomoscTextBox(wiadomosc);
                     MessageBox.Show("Wiadomość odczytana");
                 }
@@ -93,7 +99,7 @@ namespace UkrywanieWiadomosci
         {
             // Ustawianie Label
             _wskaznikiGUI.Ustaw(EnumDoGUI.IdLabel.StatusLabel, this.StatusLabel);
-            _wskaznikiGUI.Ustaw(EnumDoGUI.IdLabel.KtoryZnak, this.KtoryZnak);
+            _wskaznikiGUI.Ustaw(EnumDoGUI.IdLabel.KtoryBit, this.KtoryBit);
 
             // Ustawianie TextBox
             _wskaznikiGUI.Ustaw(EnumDoGUI.IdTextBox.SciezkaDoPNGTextbox, this.SciezkaDoPNGTextbox);

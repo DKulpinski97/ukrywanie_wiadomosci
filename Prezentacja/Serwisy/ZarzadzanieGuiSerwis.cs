@@ -52,7 +52,7 @@ namespace UkrywanieWiadomosci.Prezentacja.Serwisy
         }
         public void PrzypiszWartoscKtoryZnakLabel(string text)
         {
-            PrzypiszWartoscLabel(_wskaznikiDoGUI.Pobierz(EnumDoGUI.IdLabel.KtoryZnak), text);
+            PrzypiszWartoscLabel(_wskaznikiDoGUI.Pobierz(EnumDoGUI.IdLabel.KtoryBit), text);
         }
         //Pobierz wartość z radiobox
         public bool PobierzRodzajAlgorytmuRadioBox()

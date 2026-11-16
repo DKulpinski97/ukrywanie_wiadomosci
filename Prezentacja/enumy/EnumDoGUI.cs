@@ -5,7 +5,7 @@
         public enum IdLabel
         {
             StatusLabel,
-            KtoryZnak
+            KtoryBit
         }
         public enum IdTextBox
         {
