@@ -42,6 +42,14 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
             obraz = UkryjIleZnakow(obraz, ileBitowWBinarnym);
             return UkryjLosowo(obraz, WynikGeneratora, bityDoZapisu);
         }
+        public string KontrolaOdczytuLosowo()
+        {
+            Bitmap obraz = _obslugaPlikow.WczytajObrazekPNG();
+            int ileBitowDoOdczytu = OdczytajIleZnakow(obraz);
+            var seed = _zarzadzanieGui.PobierzWartoscSeedTextBox();
+            var WynikGeneratora = Generate(ileBitowDoOdczytu, SeedDoInt(seed), obraz);
+            return OdczytajLosowo(obraz, WynikGeneratora);
+        }
         private int SeedDoInt(string seed)
         {
             byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(seed));
@@ -219,6 +227,43 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
             }
             return wynik;
         }
+        private string OdczytajLosowo(Bitmap obraz,((int x, int y)[] positions, char[] colors) kontrolka)
+        {
+            List<byte> bajty = new List<byte>();
+            string aktualnyBajt = "";
 
+            for (int i = 0; i < kontrolka.colors.Length; i++)
+            {
+                var pozycja = kontrolka.positions[i];
+
+                Color pixel = obraz.GetPixel(pozycja.x, pozycja.y);
+
+                int bit = 0;
+
+                switch (kontrolka.colors[i])
+                {
+                    case 'r':
+                        bit = pixel.R & 1;
+                        break;
+
+                    case 'g':
+                        bit = pixel.G & 1;
+                        break;
+
+                    case 'b':
+                        bit = pixel.B & 1;
+                        break;
+                }
+
+                aktualnyBajt += bit.ToString();
+
+                if (aktualnyBajt.Length == 8)
+                {
+                    bajty.Add(Convert.ToByte(aktualnyBajt, 2));
+                    aktualnyBajt = "";
+                }
+            }
+            return Encoding.UTF8.GetString(bajty.ToArray());
+        }
     }
 }

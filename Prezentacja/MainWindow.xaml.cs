@@ -75,7 +75,15 @@ namespace UkrywanieWiadomosci
                 }
                 else
                 {
-                    string wiadomosc = _kontrolaProcesuUkrywania.KontrolaOdczytuStandard();
+                    string wiadomosc="";
+                    if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
+                    {
+                        wiadomosc = _kontrolaProcesuUkrywania.KontrolaOdczytuStandard();
+                    }
+                    else
+                    {
+                        wiadomosc = _kontrolaProcesuUkrywania.KontrolaOdczytuLosowo();
+                    }
                     _zarzadzanieGui.PrzypiszWartoscWiadomoscTextBox(wiadomosc);
                     MessageBox.Show("Wiadomość odczytana");
                 }
