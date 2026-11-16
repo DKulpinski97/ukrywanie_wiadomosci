@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
 using UkrywanieWiadomosci.Prezentacja.enumy;
@@ -23,12 +24,15 @@ namespace UkrywanieWiadomosci
         private readonly WskaznikiDoGUISerwis _wskaznikiGUI;
         private readonly IObslugaPlikow _obslugaPlikow;
         private readonly IWeryfikacjaDanych _weryfikacjaDanych;
-        public MainWindow(WskaznikiDoGUISerwis wskaznikiGUI, IObslugaPlikow obslugaPlikow, IWeryfikacjaDanych weryfikacjaDanych)
+        private readonly IKontrolaProcesuUkrywania _kontrolaProcesuUkrywania;
+        public MainWindow(WskaznikiDoGUISerwis wskaznikiGUI, IObslugaPlikow obslugaPlikow, IWeryfikacjaDanych weryfikacjaDanych,
+            IKontrolaProcesuUkrywania kontrolaProcesuUkrywania)
         {
             _obslugaPlikow = obslugaPlikow;
-            InitializeComponent();
             _wskaznikiGUI = wskaznikiGUI;
             _weryfikacjaDanych = weryfikacjaDanych;
+            _kontrolaProcesuUkrywania = kontrolaProcesuUkrywania;
+            InitializeComponent();
             przypiszGUI();
         }
 
@@ -51,14 +55,7 @@ namespace UkrywanieWiadomosci
             }
             else
             {
-                try
-                {
-                    var BitMapa = _obslugaPlikow.WczytajObrazekPNG();
-                }
-                catch(Exception ex) 
-                {
-                    MessageBox.Show(ex.Message);
-                }
+                _kontrolaProcesuUkrywania.KontrolaUkrywania();
             }
         }
         private void przypiszGUI()

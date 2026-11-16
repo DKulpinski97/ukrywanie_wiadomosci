@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
+using UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory;
 using UkrywanieWiadomosci.Prezentacja.Interfejsy;
@@ -38,6 +40,7 @@ namespace UkrywanieWiadomosci
             services.AddTransient<IZarzadzanieGui, ZarzadzanieGuiSerwis>();
             services.AddTransient<IObslugaPlikow, ObslugaPlikowSerwisy>();
             services.AddTransient<IWeryfikacjaDanych, WeryfikacjaDanychSerwiy>();
+            services.AddScoped<IKontrolaProcesuUkrywania, KontrolaProcesuUkrywaniaSerwis>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

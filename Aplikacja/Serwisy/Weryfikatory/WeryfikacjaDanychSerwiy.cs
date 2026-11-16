@@ -56,6 +56,11 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
                 {
                     return (false, "Obrazek jest za mały by ukryć wiadomość");
                 }
+                //2147483647 - jest to maksymalna wartość znaków dla 4 bajtów przy uwzglednienu po 2 bajty na by zapewnić polskie znaki.
+                if (ileBitowDoUkrycia +4*8 > 2147483647)
+                {
+                    return (false, "Wiadomość jest za długa. Maksymalnie może mieć 2147483647");
+                }
             }
             else
             {
