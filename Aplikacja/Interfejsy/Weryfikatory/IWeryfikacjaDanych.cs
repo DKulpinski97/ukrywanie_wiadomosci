@@ -6,6 +6,6 @@ namespace UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory
 {
     public interface IWeryfikacjaDanych
     {
-        public (bool Succes, string komunikat) WeryfikacjaDanychPoczaatkowych();
+        public (bool Succes, string komunikat) WeryfikacjaDanychPoczatkowych();
     }
 }

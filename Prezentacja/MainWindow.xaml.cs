@@ -52,7 +52,7 @@ namespace UkrywanieWiadomosci
 
         private void RozpocznijButton_Click(object sender, RoutedEventArgs e)
         {
-            var tmp = _weryfikacjaDanych.WeryfikacjaDanychPoczaatkowych();
+            var tmp = _weryfikacjaDanych.WeryfikacjaDanychPoczatkowych();
             if (tmp.Succes == false)
             {
                 MessageBox.Show(tmp.komunikat);
@@ -63,10 +63,13 @@ namespace UkrywanieWiadomosci
                 {
                     Bitmap wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
                     _obslugaPlikow.ZapisNowegoObrazka(wynik);
+                    MessageBox.Show("Obraz zapisany");
                 }
                 else
                 {
                     string wiadomosc= _kontrolaProcesuUkrywania.KontrolaOdczytuStandard();
+                    _zarzadzanieGui.PrzypiszWartoscWiadomoscTextBox(wiadomosc);
+                    MessageBox.Show("Wiadomość odczytana");
                 }
             }
         }

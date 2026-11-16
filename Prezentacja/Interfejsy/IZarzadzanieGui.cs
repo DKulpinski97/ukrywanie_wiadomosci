@@ -9,6 +9,8 @@ namespace UkrywanieWiadomosci.Prezentacja.Interfejsy
         public void PrzypiszWartoscPNGTextBox(string text);
         public string PobierzWartoscPNGTextBox();
         public void PrzypiszWartoscSciezkaDoZapisuTextBox(string text);
+
+        public void PrzypiszWartoscWiadomoscTextBox(string text);
         public string PobierzWartoscSciezkaDoZapisuTextBox();
         public string PobierzWartoscSeedTextBox();
         public string PobierzWartoscWiadomoscTextBox();
