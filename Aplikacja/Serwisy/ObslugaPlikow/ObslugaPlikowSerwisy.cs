@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Controls;
@@ -10,7 +11,7 @@ using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 
 namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
 {
-    public class ObslugaPlikowSerwisy:IObslugaPlikow
+    public class ObslugaPlikowSerwisy : IObslugaPlikow
     {
         private readonly IZarzadzanieGui _zarzadzanieGui;
         public ObslugaPlikowSerwisy(IZarzadzanieGui zarzadzanieGui)
@@ -54,5 +55,10 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
             }
         }
 
+        public void ZapisNowegoObrazka(Bitmap obraz)
+        {
+            string nowaSciezka = _zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox() + "/NowyObraz.png";
+            obraz.Save(nowaSciezka, ImageFormat.Png);
+        }
     }
 }

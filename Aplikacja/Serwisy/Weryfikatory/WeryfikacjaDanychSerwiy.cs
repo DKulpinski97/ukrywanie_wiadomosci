@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
@@ -12,7 +13,7 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
     {
         private readonly IZarzadzanieGui _zarzadzanieGui;
         private readonly IObslugaPlikow _obslugaPlikow;
-        public WeryfikacjaDanychSerwiy(IZarzadzanieGui zarzadzanieGui,IObslugaPlikow obslugaPlikow)
+        public WeryfikacjaDanychSerwiy(IZarzadzanieGui zarzadzanieGui, IObslugaPlikow obslugaPlikow)
         {
             _zarzadzanieGui = zarzadzanieGui;
             _obslugaPlikow = obslugaPlikow;
@@ -28,24 +29,34 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
             }
             try
             {
-                 bitmap = _obslugaPlikow.WczytajObrazekPNG();
+                bitmap = _obslugaPlikow.WczytajObrazekPNG();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return (false, ex.Message);
             }
+            //Sprawdzanie warunków zapisu
             if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
             {
+                //Sprawdzanie czy podano miejsce zapisu
                 var sprawdzenieMiejscaZapisu = SprawdzenieMiejscaZapisu();
                 if (sprawdzenieMiejscaZapisu.Succes == false)
                 {
                     return sprawdzenieMiejscaZapisu;
                 }
+                //Sprawdzanie czy nie ma obrazu
+                var sprawdzanieCzyNieMaObrazu = SprawdzCzyNieMaTakiegoObrazu();
+                if(sprawdzanieCzyNieMaObrazu.Succes ==false)
+                {
+                    return sprawdzanieCzyNieMaObrazu;
+                }
+                //Sprawdzanie czy podano wiadomosc
                 var sprawdzenieMiejscaWiadomosci = SprawdzCzyWiadomoscJestPusta();
                 if (sprawdzenieMiejscaWiadomosci.Succes == true)
                 {
                     return (false, "Nie podano wiadomości do ukrycia");
                 }
+                //Sprawdzanie czy wiadomość się zmieści
                 long ileZnaków = _zarzadzanieGui.PobierzWartoscWiadomoscTextBox().Length;
                 long ileBitowDoUkrycia = ileZnaków * 2 * 8;
                 int szerokosc = bitmap.Width;
@@ -57,19 +68,21 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
                     return (false, "Obrazek jest za mały by ukryć wiadomość");
                 }
                 //2147483647 - jest to maksymalna wartość znaków dla 4 bajtów przy uwzglednienu po 2 bajty na by zapewnić polskie znaki.
-                if (ileBitowDoUkrycia +4*8 > 2147483647)
+                if (ileBitowDoUkrycia + 4 * 8 > 2147483647)
                 {
                     return (false, "Wiadomość jest za długa. Maksymalnie może mieć 2147483647");
                 }
             }
             else
             {
+                //sprawdzanie czy wiadomość jest pusta
                 var sprawdzenieMiejscaWiadomosci = SprawdzCzyWiadomoscJestPusta();
                 if (sprawdzenieMiejscaWiadomosci.Succes == false)
                 {
                     return sprawdzenieMiejscaWiadomosci;
                 }
             }
+            //SPrawdzanie rodzaju algorytmu
             if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == false)
             {
                 var sprawdzSeed = SprawdzCzySeedcJestPusta();
@@ -94,6 +107,15 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
             if (string.IsNullOrWhiteSpace(_zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox()) == true)
             {
                 return (false, "Nie wybrano miejsca zapisu");
+            }
+            return (true, "");
+        }
+        private (bool Succes, string Komunikat) SprawdzCzyNieMaTakiegoObrazu()
+        {
+            string nowaSciezka = _zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox() + "\\NowyObraz.png";
+            if(File.Exists(nowaSciezka) ==true)
+            {
+                return (false, "W wskazanym miejscu jest już obraz. Wybierz inne miejsce lub usuń stary.");
             }
             return (true, "");
         }

@@ -62,6 +62,7 @@ namespace UkrywanieWiadomosci
                 if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
                 {
                     Bitmap wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
+                    _obslugaPlikow.ZapisNowegoObrazka(wynik);
                 }
                 else
                 {

@@ -10,5 +10,6 @@ namespace UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow
         public void PrzypiszSciezkePNG();
         public void PrzypiszSciezkeDoMiejscaZapisu();
         public Bitmap WczytajObrazekPNG();
+        public void ZapisNowegoObrazka(Bitmap obrazek);
     }
 }
