@@ -8,8 +8,8 @@ namespace UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola
     public interface IKontrolaProcesuUkrywania
     {
         public Bitmap KontrolaUkrywaniaStandard();
-        string KontrolaOdczytuStandard();
+        public (bool Succes, string komunikat) KontrolaOdczytuStandard();
         public Bitmap KontrolaUkrywaniaLosowa();
-        string KontrolaOdczytuLosowo();
+        public (bool Succes, string komunikat) KontrolaOdczytuLosowo();
     }
 }

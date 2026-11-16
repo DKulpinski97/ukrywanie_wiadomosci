@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Controls;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
+using UkrywanieWiadomosci.Exceptions;
 using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 
 namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
@@ -51,14 +52,21 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
             }
             catch
             {
-                throw new Exception("Błąd krytyczny najprawdopodobniej to nie PNG");
+                throw new BladOperacjiException("Błąd krytyczny najprawdopodobniej to nie PNG");
             }
         }
 
         public void ZapisNowegoObrazka(Bitmap obraz)
         {
-            string nowaSciezka = _zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox() + "/NowyObraz.png";
-            obraz.Save(nowaSciezka, ImageFormat.Png);
+            try
+            {
+                string nowaSciezka = _zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox() + "/NowyObraz.png";
+                obraz.Save(nowaSciezka, ImageFormat.Png);
+            }
+            catch
+            {
+                throw new BladOperacjiException("Nie udało się zapisać pliku");
+            }
         }
     }
 }

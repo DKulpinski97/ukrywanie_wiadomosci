@@ -35,6 +35,13 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
             {
                 return (false, ex.Message);
             }
+            int szerokosc = bitmap.Width;
+            int wysokosc = bitmap.Height;
+            //Sprawdzanie czy obrazek ma przynajmniej 32 piksele szerokości 
+            if (szerokosc < 32)
+            {
+                return (false, "Obrazek musi mieć szerokość przynajmniej 32 pixeli");
+            }
             //Sprawdzanie warunków zapisu
             if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
             {
@@ -57,18 +64,26 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
                     return (false, "Nie podano wiadomości do ukrycia");
                 }
                 //Sprawdzanie czy wiadomość się zmieści
-                long ileZnaków = _zarzadzanieGui.PobierzWartoscWiadomoscTextBox().Length;
-                long ileBitowDoUkrycia = ileZnaków * 2 * 8;
-                int szerokosc = bitmap.Width;
-                int wysokosc = bitmap.Height;
-
-                long liczbaPikseli = (long)szerokosc * wysokosc;
-                if ((ileBitowDoUkrycia + 4 * 8) >= liczbaPikseli)
+                string  wiadomosc = _zarzadzanieGui.PobierzWartoscWiadomoscTextBox();
+                long ileBitowDoUkrycia = (long)Encoding.UTF8.GetByteCount(wiadomosc) * 8 + 32;
+                if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
                 {
-                    return (false, "Obrazek jest za mały by ukryć wiadomość");
+                    long liczbaPikseli = (long)szerokosc * wysokosc;
+                    if (ileBitowDoUkrycia > liczbaPikseli)
+                    {
+                        return (false, "Obrazek jest za mały by ukryć wiadomość");
+                    }
                 }
-                //2147483647 - jest to maksymalna wartość znaków dla 4 bajtów przy uwzglednienu po 2 bajty na by zapewnić polskie znaki.
-                if (ileBitowDoUkrycia + 4 * 8 > 2147483647)
+                else
+                {
+                    long liczbaPikseli = (long)(szerokosc -32) * wysokosc;
+                    if (ileBitowDoUkrycia > liczbaPikseli)
+                    {
+                        return (false, "Obrazek jest za mały by ukryć wiadomość");
+                    }
+                }
+                //2147483647 - jest to maksymalna wartość dla 4 bajtów przy uwzglednienu po 2 bajty na by zapewnić polskie znaki.
+                if (ileBitowDoUkrycia > 2147483647)
                 {
                     return (false, "Wiadomość jest za długa. Maksymalnie może mieć 2147483647");
                 }

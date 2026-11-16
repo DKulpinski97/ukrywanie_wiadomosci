@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
+using UkrywanieWiadomosci.Exceptions;
 using UkrywanieWiadomosci.Prezentacja.enumy;
 using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 using UkrywanieWiadomosci.Prezentacja.Wskazniki;
@@ -52,49 +53,77 @@ namespace UkrywanieWiadomosci
 
         private void RozpocznijButton_Click(object sender, RoutedEventArgs e)
         {
-            _zarzadzanieGui.PrzypiszWartoscStatusLabel("Sprawdzanie danych początkowych");
-            var tmp = _weryfikacjaDanych.WeryfikacjaDanychPoczatkowych();
-            if (tmp.Succes == false)
+            try
             {
-                _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na poprawe danych");
-                MessageBox.Show(tmp.komunikat);
-            }
-            else
-            {
-                if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
+                _zarzadzanieGui.PrzypiszWartoscStatusLabel("Sprawdzanie danych początkowych");
+                var tmp = _weryfikacjaDanych.WeryfikacjaDanychPoczatkowych();
+                if (tmp.Succes == false)
                 {
-                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Ukrywam wiadomość");
-                    Bitmap wynik;
-                    if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
-                    {
-                        wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
-                    }
-                    else
-                    {
-                        wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaLosowa();
-                    }
-                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na nowe polecenie");
-                    _obslugaPlikow.ZapisNowegoObrazka(wynik);
-                    MessageBox.Show("Obraz zapisany");
+                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na poprawe danych");
+                    MessageBox.Show(tmp.komunikat);
+                    return;
                 }
                 else
                 {
-                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Odczytuje dane");
-                    string wiadomosc="";
-                    if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
+                    if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
                     {
-                        wiadomosc = _kontrolaProcesuUkrywania.KontrolaOdczytuStandard();
+                        _zarzadzanieGui.PrzypiszWartoscStatusLabel("Ukrywam wiadomość");
+                        Bitmap wynik;
+                        if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
+                        {
+                            wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
+                        }
+                        else
+                        {
+                            wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaLosowa();
+                        }
+                        _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na nowe polecenie");
+                        _obslugaPlikow.ZapisNowegoObrazka(wynik);
+                        MessageBox.Show("Obraz zapisany");
+                        return;
                     }
                     else
                     {
-                        wiadomosc = _kontrolaProcesuUkrywania.KontrolaOdczytuLosowo();
+                        _zarzadzanieGui.PrzypiszWartoscStatusLabel("Odczytuje dane");
+                        string wiadomosc = "";
+                        bool czyUdane = false;
+                        if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
+                        {
+                            var wynik = _kontrolaProcesuUkrywania.KontrolaOdczytuStandard();
+                            wiadomosc = wynik.komunikat;
+                            czyUdane = wynik.Succes;
+                        }
+                        else
+                        {
+                            var wynik = _kontrolaProcesuUkrywania.KontrolaOdczytuLosowo();
+                            wiadomosc = wynik.komunikat;
+                            czyUdane = wynik.Succes;
+                        }
+                        _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na nowe polecenie");
+                        if (czyUdane == true)
+                        {
+                            _zarzadzanieGui.PrzypiszWartoscWiadomoscTextBox(wiadomosc);
+                            MessageBox.Show("Wiadomość odczytana");
+                            return;
+                        }
+                        else
+                        {
+                            MessageBox.Show(wiadomosc);
+                            return;
+                        }
                     }
-                    _zarzadzanieGui.PrzypiszWartoscStatusLabel("Czekam na nowe polecenie");
-                    _zarzadzanieGui.PrzypiszWartoscWiadomoscTextBox(wiadomosc);
-                    MessageBox.Show("Wiadomość odczytana");
                 }
             }
+            catch(BladOperacjiException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            catch
+            {
+                MessageBox.Show("Wystąpił błąd krytyczny, spróbuj ponownie");
+            }
         }
+        
         private void przypiszGUI()
         {
             // Ustawianie Label

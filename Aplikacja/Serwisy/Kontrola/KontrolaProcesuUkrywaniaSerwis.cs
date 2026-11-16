@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Security.Cryptography;
 using System.Text;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola;
@@ -27,12 +25,16 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
             _zarzadzanieGui.PrzypiszWartoscStatusLabel("Ukrywam wiadomość");
             return UkryjWiadomoscStandard(obraz, calaWiadomosc);
         }
-        public string KontrolaOdczytuStandard()
+        public (bool Succes, string komunikat) KontrolaOdczytuStandard()
         {
             Bitmap obraz = _obslugaPlikow.WczytajObrazekPNG();
             int ileBitowDoOdczytu = OdczytajIleZnakow(obraz);
+            if (ileBitowDoOdczytu < 0 || ileBitowDoOdczytu > (obraz.Width * obraz.Height) - 32)
+            {
+                return (false, "Obrazek ma źle zaszyfrowaną ilość bitów do odczytu");
+            }
             _zarzadzanieGui.PrzypiszWartoscStatusLabel("Odczytuje wiadomość");
-            return OdczytajWiadomoscStandard(obraz, ileBitowDoOdczytu);
+            return (true,OdczytajWiadomoscStandard(obraz, ileBitowDoOdczytu));
         }
         public Bitmap KontrolaUkrywaniaLosowa()
         {
@@ -46,16 +48,21 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
             _zarzadzanieGui.PrzypiszWartoscStatusLabel("Ukrywam wiadomość");
             return UkryjLosowo(obraz, WynikGeneratora, bityDoZapisu);
         }
-        public string KontrolaOdczytuLosowo()
+        public (bool Succes, string komunikat) KontrolaOdczytuLosowo()
         {
             Bitmap obraz = _obslugaPlikow.WczytajObrazekPNG();
             int ileBitowDoOdczytu = OdczytajIleZnakow(obraz);
+            if (ileBitowDoOdczytu < 0 || ileBitowDoOdczytu > (obraz.Width - 32) * obraz.Height)
+            {
+                return (false, "Obrazek ma źle zaszyfrowaną ilość bitów do odczytu");
+            }
             var seed = _zarzadzanieGui.PobierzWartoscSeedTextBox();
             _zarzadzanieGui.PrzypiszWartoscStatusLabel("Generuje seed");
             var WynikGeneratora = Generate(ileBitowDoOdczytu, SeedDoInt(seed), obraz);
             _zarzadzanieGui.PrzypiszWartoscStatusLabel("Odczytuje wiadomość");
-            return OdczytajLosowo(obraz, WynikGeneratora);
+            return (true,OdczytajLosowo(obraz, WynikGeneratora));
         }
+       
         private int SeedDoInt(string seed)
         {
             byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(seed));
@@ -81,7 +88,7 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
 
                 do
                 {
-                    x = random.Next(33, maxWith);
+                    x = random.Next(32, maxWith);
                     y = random.Next(0, maxHeight);
                 }
                 while (!used.Add((x, y)));
