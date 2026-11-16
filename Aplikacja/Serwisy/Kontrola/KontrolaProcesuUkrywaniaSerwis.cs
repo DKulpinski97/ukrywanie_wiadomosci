@@ -25,6 +25,12 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
             string[] calaWiadomosc = ileBitowWBinarnym.Concat(bityDoZapisu).ToArray();
             return  UkryjWiadomoscStandard(obraz, calaWiadomosc);
         }
+        public string KontrolaOdczytuStandard()
+        {
+            Bitmap obraz = _obslugaPlikow.WczytajObrazekPNG();
+            int ileBitowDoOdczytu = OdczytajIleZnakow(obraz);
+            return OdczytajWiadomoscStandard(obraz, ileBitowDoOdczytu);
+        }
         private string[] KonwertujWiadomoscNaBity()
         {
             byte[] bajty = Encoding.UTF8.GetBytes(_zarzadzanieGui.PobierzWartoscWiadomoscTextBox());
@@ -63,6 +69,60 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
                 }
             }
             return wynik;
+        }
+        private int OdczytajIleZnakow(Bitmap obraz)
+        {
+            int dlugosc = 0;
+            int licznik = 0;
+
+            for (int y = 0; y < obraz.Height && licznik < 32; y++)
+            {
+                for (int x = 0; x < obraz.Width && licznik < 32; x++)
+                {
+                    Color pixel = obraz.GetPixel(x, y);
+
+                    dlugosc = (dlugosc << 1) | (pixel.R & 1);
+
+                    licznik++;
+                }
+            }
+            return dlugosc;
+        }
+        private string OdczytajWiadomoscStandard(Bitmap obraz, int ileBitow)
+        {
+            List<byte> bajty = new List<byte>();
+            string aktualnyBajt = "";
+
+            int indeks = 0;
+
+            for (int y = 0; y < obraz.Height; y++)
+            {
+                for (int x = 0; x < obraz.Width; x++)
+                {
+                    Color pixel = obraz.GetPixel(x, y);
+
+                    // Pomijamy pierwsze 32 bity (długość wiadomości)
+                    if (indeks >= 32 && indeks < 32 + ileBitow)
+                    {
+                        int bit = pixel.R & 1;
+
+                        aktualnyBajt += bit.ToString();
+
+                        if (aktualnyBajt.Length == 8)
+                        {
+                            bajty.Add(Convert.ToByte(aktualnyBajt, 2));
+                            aktualnyBajt = "";
+                        }
+                    }
+
+                    indeks++;
+
+                    if (indeks >= 32 + ileBitow)
+                        return Encoding.UTF8.GetString(bajty.ToArray());
+                }
+            }
+
+            return Encoding.UTF8.GetString(bajty.ToArray());
         }
     }
 }

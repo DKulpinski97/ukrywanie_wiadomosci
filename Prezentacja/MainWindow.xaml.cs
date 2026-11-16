@@ -13,6 +13,7 @@ using UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
 using UkrywanieWiadomosci.Prezentacja.enumy;
+using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 using UkrywanieWiadomosci.Prezentacja.Wskazniki;
 
 namespace UkrywanieWiadomosci
@@ -26,13 +27,15 @@ namespace UkrywanieWiadomosci
         private readonly IObslugaPlikow _obslugaPlikow;
         private readonly IWeryfikacjaDanych _weryfikacjaDanych;
         private readonly IKontrolaProcesuUkrywania _kontrolaProcesuUkrywania;
+        private readonly IZarzadzanieGui _zarzadzanieGui;
         public MainWindow(WskaznikiDoGUISerwis wskaznikiGUI, IObslugaPlikow obslugaPlikow, IWeryfikacjaDanych weryfikacjaDanych,
-            IKontrolaProcesuUkrywania kontrolaProcesuUkrywania)
+            IKontrolaProcesuUkrywania kontrolaProcesuUkrywania, IZarzadzanieGui zarzadzanieGui)
         {
             _obslugaPlikow = obslugaPlikow;
             _wskaznikiGUI = wskaznikiGUI;
             _weryfikacjaDanych = weryfikacjaDanych;
             _kontrolaProcesuUkrywania = kontrolaProcesuUkrywania;
+            _zarzadzanieGui = zarzadzanieGui;
             InitializeComponent();
             przypiszGUI();
         }
@@ -56,7 +59,14 @@ namespace UkrywanieWiadomosci
             }
             else
             {
-                Bitmap wynik =  _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
+                if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
+                {
+                    Bitmap wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
+                }
+                else
+                {
+                    string wiadomosc= _kontrolaProcesuUkrywania.KontrolaOdczytuStandard();
+                }
             }
         }
         private void przypiszGUI()
