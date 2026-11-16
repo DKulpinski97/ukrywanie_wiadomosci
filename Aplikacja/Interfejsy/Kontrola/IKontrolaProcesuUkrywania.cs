@@ -9,5 +9,7 @@ namespace UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola
     {
         public Bitmap KontrolaUkrywaniaStandard();
         string KontrolaOdczytuStandard();
+        public Bitmap KontrolaUkrywaniaLosowa();
+        string KontrolaOdczytuLosowo();
     }
 }
