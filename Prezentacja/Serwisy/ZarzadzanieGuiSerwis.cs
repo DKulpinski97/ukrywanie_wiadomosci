@@ -28,6 +28,10 @@ namespace UkrywanieWiadomosci.Prezentacja.Serwisy
         {
             PrzypiszWartoscTextBox(_wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoZapisuTextbox), text);
         }
+        public void PrzypiszWartoscWiadomoscTextBox(string text)
+        {
+            PrzypiszWartoscTextBox(_wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.WiadomoscTextBox), text);
+        }
         public string PobierzWartoscSciezkaDoZapisuTextBox()
         {
             return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SciezkaDoZapisuTextbox).Text;
@@ -36,6 +40,7 @@ namespace UkrywanieWiadomosci.Prezentacja.Serwisy
         {
             return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.WiadomoscTextBox).Text;
         }
+
         public string PobierzWartoscSeedTextBox()
         {
             return _wskaznikiDoGUI.Pobierz(EnumDoGUI.IdTextBox.SeedTextBox).Text;

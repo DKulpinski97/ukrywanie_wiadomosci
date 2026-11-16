@@ -19,7 +19,7 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
             _obslugaPlikow = obslugaPlikow;
         }
 
-        public (bool Succes, string komunikat) WeryfikacjaDanychPoczaatkowych()
+        public (bool Succes, string komunikat) WeryfikacjaDanychPoczatkowych()
         {
             var sprawdzenieMiejsceObrazu = SprawdzenieSciezkiPNG();
             Bitmap bitmap;
