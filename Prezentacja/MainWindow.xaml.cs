@@ -61,13 +61,21 @@ namespace UkrywanieWiadomosci
             {
                 if (_zarzadzanieGui.PobierzCzyUkrycRadioBox() == true)
                 {
-                    Bitmap wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
+                    Bitmap wynik;
+                    if (_zarzadzanieGui.PobierzRodzajAlgorytmuRadioBox() == true)
+                    {
+                        wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
+                    }
+                    else
+                    {
+                        wynik = _kontrolaProcesuUkrywania.KontrolaUkrywaniaLosowa();
+                    }
                     _obslugaPlikow.ZapisNowegoObrazka(wynik);
                     MessageBox.Show("Obraz zapisany");
                 }
                 else
                 {
-                    string wiadomosc= _kontrolaProcesuUkrywania.KontrolaOdczytuStandard();
+                    string wiadomosc = _kontrolaProcesuUkrywania.KontrolaOdczytuStandard();
                     _zarzadzanieGui.PrzypiszWartoscWiadomoscTextBox(wiadomosc);
                     MessageBox.Show("Wiadomość odczytana");
                 }

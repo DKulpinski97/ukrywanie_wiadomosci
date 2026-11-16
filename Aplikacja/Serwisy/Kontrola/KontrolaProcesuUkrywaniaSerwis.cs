@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Cryptography;
 using System.Text;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
@@ -30,6 +31,52 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
             Bitmap obraz = _obslugaPlikow.WczytajObrazekPNG();
             int ileBitowDoOdczytu = OdczytajIleZnakow(obraz);
             return OdczytajWiadomoscStandard(obraz, ileBitowDoOdczytu);
+        }
+        public Bitmap KontrolaUkrywaniaLosowa()
+        {
+            Bitmap obraz = _obslugaPlikow.WczytajObrazekPNG();
+            var bityDoZapisu = KonwertujWiadomoscNaBity();
+            var ileBitowWBinarnym = ZamienLiczbeNaBity(bityDoZapisu.Length);
+            var seed = _zarzadzanieGui.PobierzWartoscSeedTextBox();
+            var WynikGeneratora = Generate(bityDoZapisu.Length, SeedDoInt(seed), obraz);
+            obraz = UkryjIleZnakow(obraz, ileBitowWBinarnym);
+            return UkryjLosowo(obraz, WynikGeneratora, bityDoZapisu);
+        }
+        private int SeedDoInt(string seed)
+        {
+            byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(seed));
+            return BitConverter.ToInt32(hash, 0);
+        }
+        public static ((int x, int y)[] positions, char[] colors) Generate (int ileZnakow, int seed, Bitmap obraz)
+        {
+            Random random = new Random(seed);
+
+            var positions = new (int x, int y)[ileZnakow];
+            var colors = new char[ileZnakow];
+
+            char[] options = {  'r', 'g', 'b' };
+
+            var used = new HashSet<(int x, int y)>();
+
+
+            int maxWith = obraz.Width;
+            int maxHeight = obraz.Height;
+            for (int i = 0; i < ileZnakow; i++)
+            {
+                int x, y;
+
+                do
+                {
+                    x = random.Next(33, maxWith);
+                    y = random.Next(0, maxHeight);
+                }
+                while (!used.Add((x, y)));
+
+                positions[i] = (x, y);
+                colors[i] = options[random.Next(3)];
+            }
+
+            return (positions, colors);
         }
         private string[] KonwertujWiadomoscNaBity()
         {
@@ -73,19 +120,13 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
         private int OdczytajIleZnakow(Bitmap obraz)
         {
             int dlugosc = 0;
-            int licznik = 0;
 
-            for (int y = 0; y < obraz.Height && licznik < 32; y++)
-            {
-                for (int x = 0; x < obraz.Width && licznik < 32; x++)
+                for (int x = 0; x < 32; x++)
                 {
-                    Color pixel = obraz.GetPixel(x, y);
+                    Color pixel = obraz.GetPixel(x, 0);
 
                     dlugosc = (dlugosc << 1) | (pixel.R & 1);
-
-                    licznik++;
                 }
-            }
             return dlugosc;
         }
         private string OdczytajWiadomoscStandard(Bitmap obraz, int ileBitow)
@@ -124,5 +165,60 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
 
             return Encoding.UTF8.GetString(bajty.ToArray());
         }
+        private Bitmap UkryjIleZnakow(Bitmap obraz, string[] IleZnakowBit)
+        {
+            Bitmap wynik = new Bitmap(obraz);
+
+                for (int x = 0; x < 32; x++)
+                {
+                    Color pixel = wynik.GetPixel(x, 0);
+                    int tmp = (pixel.R & 0xFE) | int.Parse(IleZnakowBit[x]);
+
+                    wynik.SetPixel(x, 0, Color.FromArgb(
+                        pixel.A,
+                        tmp,
+                        pixel.G,
+                        pixel.B
+                    ));
+                }
+            return wynik;
+        }
+        private Bitmap UkryjLosowo(Bitmap obraz,((int x, int y)[] positions, char[] colors) kontrolka,string[] wiadomosc)
+        {
+            Bitmap wynik = new Bitmap(obraz);
+
+            for (int i = 0; i < kontrolka.colors.Length; i++)
+            {
+                var pozycja = kontrolka.positions[i];
+
+                Color pixel = wynik.GetPixel(pozycja.x, pozycja.y);
+
+                int bit = int.Parse(wiadomosc[i]);
+
+                int r = pixel.R;
+                int g = pixel.G;
+                int b = pixel.B;
+
+                switch (kontrolka.colors[i])
+                {
+                    case 'r':
+                        r = (r & 0xFE) | bit;
+                        break;
+
+                    case 'g':
+                        g = (g & 0xFE) | bit;
+                        break;
+
+                    case 'b':
+                        b = (b & 0xFE) | bit;
+                        break;
+                }
+
+                wynik.SetPixel(pozycja.x,pozycja.y, Color.FromArgb(pixel.A, r, g, b)
+                );
+            }
+            return wynik;
+        }
+
     }
 }
