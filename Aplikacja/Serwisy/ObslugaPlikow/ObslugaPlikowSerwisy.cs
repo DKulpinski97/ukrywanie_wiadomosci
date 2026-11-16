@@ -1,12 +1,9 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
-using System.Windows.Controls;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
+using UkrywanieWiadomosci.Domena.Reguly;
 using UkrywanieWiadomosci.Exceptions;
 using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 
@@ -30,29 +27,48 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
                 CheckFileExists = true,
                 CheckPathExists = true
             };
-            openFileDialog.ShowDialog();
-            _zarzadzanieGui.PrzypiszWartoscPNGTextBox(openFileDialog.FileName);
+            if (openFileDialog.ShowDialog() == true)
+            {
+                _zarzadzanieGui.PrzypiszWartoscPNGTextBox(openFileDialog.FileName);
+            }
         }
         public void PrzypiszSciezkeDoMiejscaZapisu()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.ShowDialog();
-            _zarzadzanieGui.PrzypiszWartoscSciezkaDoZapisuTextBox(openFolderDialog.FolderName);
+            if (openFolderDialog.ShowDialog() == true)
+            {
+                _zarzadzanieGui.PrzypiszWartoscSciezkaDoZapisuTextBox(openFolderDialog.FolderName);
+            }
         }
         public Bitmap WczytajObrazekPNG()
         {
             var sciezka = _zarzadzanieGui.PobierzWartoscPNGTextBox();
 
-            byte[] bytes = File.ReadAllBytes(sciezka);
+            byte[] bytes;
+
+            try
+            {
+                bytes = File.ReadAllBytes(sciezka);
+            }
+            catch (IOException ex)
+            {
+                throw new BladOperacjiException("Nie można odczytać pliku.", ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new BladOperacjiException("Brak uprawnień do odczytu pliku.",ex);
+            }
+
             try
             {
                 using var stream = new MemoryStream(bytes);
                 using var temp = System.Drawing.Image.FromStream(stream, true, true);
+
                 return new Bitmap(temp);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new BladOperacjiException("Błąd krytyczny najprawdopodobniej to nie PNG");
+                throw new BladOperacjiException("Błąd krytyczny najprawdopodobniej to nie PNG.", ex);
             }
         }
 
@@ -60,12 +76,12 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
         {
             try
             {
-                string nowaSciezka = _zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox() + "/NowyObraz.png";
+                string nowaSciezka = Path.Combine(_zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox(), RegulyNazwa.NazwaPliku);
                 obraz.Save(nowaSciezka, ImageFormat.Png);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new BladOperacjiException("Nie udało się zapisać pliku");
+                throw new BladOperacjiException("Nie udało się zapisać pliku",ex);
             }
         }
     }

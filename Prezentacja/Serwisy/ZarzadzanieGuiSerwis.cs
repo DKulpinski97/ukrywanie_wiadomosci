@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using UkrywanieWiadomosci.Prezentacja.enumy;
 using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 using UkrywanieWiadomosci.Prezentacja.Wskazniki;

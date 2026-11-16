@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using System.Text;
-using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
+using UkrywanieWiadomosci.Domena.Reguly;
 using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 
 namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
@@ -12,29 +10,18 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
     public class WeryfikacjaDanychSerwiy : IWeryfikacjaDanych
     {
         private readonly IZarzadzanieGui _zarzadzanieGui;
-        private readonly IObslugaPlikow _obslugaPlikow;
-        public WeryfikacjaDanychSerwiy(IZarzadzanieGui zarzadzanieGui, IObslugaPlikow obslugaPlikow)
+        public WeryfikacjaDanychSerwiy(IZarzadzanieGui zarzadzanieGui)
         {
             _zarzadzanieGui = zarzadzanieGui;
-            _obslugaPlikow = obslugaPlikow;
         }
-
-        public (bool Succes, string komunikat) WeryfikacjaDanychPoczatkowych()
+        public (bool Succes, string komunikat) SprawdzanieCzySciezkaNieJestPusta()
         {
-            var sprawdzenieMiejsceObrazu = SprawdzenieSciezkiPNG();
-            Bitmap bitmap;
-            if (sprawdzenieMiejsceObrazu.Succes == false)
-            {
-                return (false, "Nie wybrano pliku PNG.");
-            }
-            try
-            {
-                bitmap = _obslugaPlikow.WczytajObrazekPNG();
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.Message);
-            }
+            return SprawdzenieSciezkiPNG();
+        }
+        public (bool Succes, string komunikat) WeryfikacjaDanychPoczatkowych(Bitmap bitmap)
+        {
+            
+            
             int szerokosc = bitmap.Width;
             int wysokosc = bitmap.Height;
             //Sprawdzanie czy obrazek ma przynajmniej 32 piksele szerokości 
@@ -82,11 +69,6 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
                         return (false, "Obrazek jest za mały by ukryć wiadomość");
                     }
                 }
-                //2147483647 - jest to maksymalna wartość dla 4 bajtów przy uwzglednienu po 2 bajty na by zapewnić polskie znaki.
-                if (ileBitowDoUkrycia > 2147483647)
-                {
-                    return (false, "Wiadomość jest za długa. Maksymalnie może mieć 2147483647");
-                }
             }
             else
             {
@@ -127,7 +109,7 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory
         }
         private (bool Succes, string Komunikat) SprawdzCzyNieMaTakiegoObrazu()
         {
-            string nowaSciezka = _zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox() + "\\NowyObraz.png";
+            string nowaSciezka = Path.Combine(_zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox(), RegulyNazwa.NazwaPliku);
             if(File.Exists(nowaSciezka) ==true)
             {
                 return (false, "W wskazanym miejscu jest już obraz. Wybierz inne miejsce lub usuń stary.");

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+﻿using System.Drawing;
 
 namespace UkrywanieWiadomosci.Aplikacja.Interfejsy.Kontrola
 {
     public interface IKontrolaProcesuUkrywania
     {
-        public Bitmap KontrolaUkrywaniaStandard();
-        public (bool Succes, string komunikat) KontrolaOdczytuStandard();
-        public Bitmap KontrolaUkrywaniaLosowa();
-        public (bool Succes, string komunikat) KontrolaOdczytuLosowo();
+        public void KontrolaUkrywaniaStandard(Bitmap obraz);
+        public (bool Succes, string komunikat) KontrolaOdczytuStandard(Bitmap obraz);
+        public void KontrolaUkrywaniaLosowa(Bitmap obraz);
+        public (bool Succes, string komunikat) KontrolaOdczytuLosowo(Bitmap obraz);
     }
 }

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace UkrywanieWiadomosci.Prezentacja.Interfejsy
+﻿namespace UkrywanieWiadomosci.Prezentacja.Interfejsy
 {
     public interface IZarzadzanieGui
     {
         public void PrzypiszWartoscPNGTextBox(string text);
         public string PobierzWartoscPNGTextBox();
         public void PrzypiszWartoscSciezkaDoZapisuTextBox(string text);
-
         public void PrzypiszWartoscWiadomoscTextBox(string text);
         public string PobierzWartoscSciezkaDoZapisuTextBox();
         public string PobierzWartoscSeedTextBox();
