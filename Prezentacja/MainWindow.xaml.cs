@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Drawing;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -55,7 +56,7 @@ namespace UkrywanieWiadomosci
             }
             else
             {
-                _kontrolaProcesuUkrywania.KontrolaUkrywania();
+                Bitmap wynik =  _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard();
             }
         }
         private void przypiszGUI()

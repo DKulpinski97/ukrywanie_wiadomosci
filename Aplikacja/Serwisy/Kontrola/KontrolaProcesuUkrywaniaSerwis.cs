@@ -17,13 +17,13 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
             _obslugaPlikow = obslugaPlikow;
             _zarzadzanieGui = zarzadzanieGui;
         }
-        public void KontrolaUkrywania()
+        public Bitmap KontrolaUkrywaniaStandard()
         {
             Bitmap obraz = _obslugaPlikow.WczytajObrazekPNG();
             var bityDoZapisu = KonwertujWiadomoscNaBity();
             var ileBitowWBinarnym = ZamienLiczbeNaBity(bityDoZapisu.Length);
             string[] calaWiadomosc = ileBitowWBinarnym.Concat(bityDoZapisu).ToArray();
-            UkryjWiadomoscStandard(obraz, calaWiadomosc);
+            return  UkryjWiadomoscStandard(obraz, calaWiadomosc);
         }
         private string[] KonwertujWiadomoscNaBity()
         {
