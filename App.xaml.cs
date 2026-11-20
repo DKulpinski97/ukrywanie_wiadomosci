@@ -7,6 +7,7 @@ using UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory;
 using UkrywanieWiadomosci.Prezentacja.Interfejsy;
+using UkrywanieWiadomosci.Prezentacja.KlasyPomocnicze;
 using UkrywanieWiadomosci.Prezentacja.Serwisy;
 using UkrywanieWiadomosci.Prezentacja.Wskazniki;
 
@@ -30,17 +31,17 @@ namespace UkrywanieWiadomosci
 
         private void ConfigureServices(IServiceCollection services)
         {
-            // Presentation
+            //Aplikacja
+            services.AddTransient<IKontrolaProcesuUkrywania, KontrolaProcesuUkrywaniaSerwis>();
+            services.AddTransient<IObslugaPlikow, ObslugaPlikowSerwisy>();
+            services.AddTransient<IWeryfikacjaDanych, WeryfikacjaDanychSerwisy>();
+
+            //Prezentacja
             services.AddTransient<MainWindow>();
-
-            // Application
-
-            //Domain
+            services.AddTransient<DialogiPlikow>();
             services.AddSingleton<WskaznikiDoGUISerwis>();
             services.AddTransient<IZarzadzanieGui, ZarzadzanieGuiSerwis>();
-            services.AddTransient<IObslugaPlikow, ObslugaPlikowSerwisy>();
-            services.AddTransient<IWeryfikacjaDanych, WeryfikacjaDanychSerwiy>();
-            services.AddScoped<IKontrolaProcesuUkrywania, KontrolaProcesuUkrywaniaSerwis>();
+            services.AddTransient<PrzygotowanieDanychPomocniczych>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

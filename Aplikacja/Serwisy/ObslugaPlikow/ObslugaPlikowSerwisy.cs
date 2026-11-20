@@ -1,49 +1,16 @@
-﻿using Microsoft.Win32;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using UkrywanieWiadomosci.Aplikacja.Interfejsy.ObslugaPlikow;
 using UkrywanieWiadomosci.Domena.Reguly;
 using UkrywanieWiadomosci.Exceptions;
-using UkrywanieWiadomosci.Prezentacja.Interfejsy;
 
 namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
 {
     public class ObslugaPlikowSerwisy : IObslugaPlikow
     {
-        private readonly IZarzadzanieGui _zarzadzanieGui;
-        public ObslugaPlikowSerwisy(IZarzadzanieGui zarzadzanieGui)
+        public Bitmap WczytajObrazekPNG(string sciezka)
         {
-            _zarzadzanieGui = zarzadzanieGui;
-        }
-
-        public void PrzypiszSciezkePNG()
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Title = "Wybierz plik PNG",
-                Filter = "Pliki PNG (*.png)|*.png",
-                Multiselect = false,
-                CheckFileExists = true,
-                CheckPathExists = true
-            };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                _zarzadzanieGui.PrzypiszWartoscPNGTextBox(openFileDialog.FileName);
-            }
-        }
-        public void PrzypiszSciezkeDoMiejscaZapisu()
-        {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            if (openFolderDialog.ShowDialog() == true)
-            {
-                _zarzadzanieGui.PrzypiszWartoscSciezkaDoZapisuTextBox(openFolderDialog.FolderName);
-            }
-        }
-        public Bitmap WczytajObrazekPNG()
-        {
-            var sciezka = _zarzadzanieGui.PobierzWartoscPNGTextBox();
-
             byte[] bytes;
 
             try
@@ -68,20 +35,20 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
             }
             catch (Exception ex)
             {
-                throw new BladOperacjiException("Błąd krytyczny najprawdopodobniej to nie PNG.", ex);
+                throw new BladOperacjiException("Wystąpił błąd krytyczny. Wybrany plik prawdopodobnie nie jest prawidłowym obrazem PNG.", ex);
             }
         }
 
-        public void ZapisNowegoObrazka(Bitmap obraz)
+        public void ZapisNowegoObrazka(Bitmap obraz,string sciezka)
         {
             try
             {
-                string nowaSciezka = Path.Combine(_zarzadzanieGui.PobierzWartoscSciezkaDoZapisuTextBox(), RegulyNazwa.NazwaPliku);
+                string nowaSciezka = Path.Combine(sciezka, NazwaDlaPliku.NazwaPliku);
                 obraz.Save(nowaSciezka, ImageFormat.Png);
             }
             catch (Exception ex)
             {
-                throw new BladOperacjiException("Nie udało się zapisać pliku",ex);
+                throw new BladOperacjiException("Nie udało się zapisać pliku.",ex);
             }
         }
     }
