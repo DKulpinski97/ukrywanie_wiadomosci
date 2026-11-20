@@ -13,7 +13,5 @@
         public void PrzypiszWartoscKtoryZnakLabel(string text);
         public bool PobierzRodzajAlgorytmuRadioBox();
         public bool PobierzCzyUkrycRadioBox();
-
-
     }
 }

@@ -5,10 +5,16 @@ namespace UkrywanieWiadomosci.Prezentacja.Wskazniki
 {
     public class WskaznikiDoGUISerwis
     {
-        private Dictionary<IdLabel, Label> Labels = new();
-        private Dictionary<IdTextBox, TextBox> TextBoxes = new();
-        private Dictionary<IdRadioBox, RadioButton> RadioBoxes = new();
+        private readonly Dictionary<IdLabel, Label> Labels = new();
+        private readonly Dictionary<IdTextBox, TextBox> TextBoxes = new();
+        private readonly Dictionary<IdRadioBox, RadioButton> RadioBoxes = new();
+        private readonly Dictionary<IdButton, Button> Buttons = new();
 
+        // Button 
+        public void Ustaw(IdButton id, Button element)
+        {
+            Buttons[id] = element;
+        }
         // LABEL
         public void Ustaw(IdLabel id, Label element)
         {
@@ -40,6 +46,22 @@ namespace UkrywanieWiadomosci.Prezentacja.Wskazniki
         public RadioButton Pobierz(IdRadioBox id)
         {
             return RadioBoxes[id];
+        }
+        public void UstawAktywnosc(bool aktywne)
+        {
+            foreach (var element in Buttons.Values)
+            {
+                element.IsEnabled = aktywne;
+            }
+            foreach (var element in TextBoxes.Values)
+            {
+                element.IsEnabled = aktywne;
+            }
+
+            foreach (var element in RadioBoxes.Values)
+            {
+                element.IsEnabled = aktywne;
+            }
         }
     }
 }
