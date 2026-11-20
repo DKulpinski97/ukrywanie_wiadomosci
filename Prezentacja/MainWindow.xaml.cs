@@ -43,7 +43,7 @@ namespace UkrywanieWiadomosci
         private void WyborPNGButton_Click(object sender, RoutedEventArgs e)
         {
             string? sciezkaDoPNG = _dialogiPlikow.PobierzSciezkePNG();
-            if(sciezkaDoPNG != null)
+            if (sciezkaDoPNG != null)
             {
                 _zarzadzanieGui.PrzypiszWartoscPNGTextBox(sciezkaDoPNG);
             }
@@ -52,16 +52,18 @@ namespace UkrywanieWiadomosci
         private void WyborSciezkiZapisuButton_Click(object sender, RoutedEventArgs e)
         {
             string? sciezkaDoMiejscaZapisu = _dialogiPlikow.PobierzSciezkeDoMiejscaZapisu();
-            if(sciezkaDoMiejscaZapisu != null)
+            if (sciezkaDoMiejscaZapisu != null)
             {
                 _zarzadzanieGui.PrzypiszWartoscSciezkaDoZapisuTextBox(sciezkaDoMiejscaZapisu);
             }
         }
 
-        private void RozpocznijButton_Click(object sender, RoutedEventArgs e)
+        private async void RozpocznijButton_Click(object sender, RoutedEventArgs e)
         {
+
             try
             {
+                _wskaznikiGUI.UstawAktywnosc(false);
                 _raportowaniePostepuLabel.KtoryBit.Report("0/0");
                 var przygotujDane = _przygotowanieDanychPomocniczych.PrzygotujDane();
                 var sprawdzenieSciezki = _weryfikacjaDanych.SprawdzanieCzySciezkaNieJestPusta(przygotujDane);
@@ -81,55 +83,52 @@ namespace UkrywanieWiadomosci
                         MessageBox.Show(danePoczatkowe.Komunikat);
                         return;
                     }
-                    else
+                    //czy ukryć
+                    if (przygotujDane.Proces == CoRobic.Ukryj)
                     {
-                        //czy ukryć
-                        if (przygotujDane.Proces == CoRobic.Ukryj)
+                        await Task.Run(() =>
+                             {
+                                 if (przygotujDane.Algorytm == RodzajAlgorytmu.Standard)
+                                 {
+                                     _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard(obraz, przygotujDane, _raportowaniePostepuLabel);
+                                 }
+                                 else
+                                 {
+                                     _kontrolaProcesuUkrywania.KontrolaUkrywaniaLosowa(obraz, przygotujDane, _raportowaniePostepuLabel);
+                                 }
+                                 _obslugaPlikow.ZapisNowegoObrazka(obraz, przygotujDane.SciezkaDoZapisu);
+                             });
+                        _raportowaniePostepuLabel.Status.Report(StaleKomunikatow.NowePolecenie);
+                        MessageBox.Show("Obraz zapisany");
+                        return;
+                    }
+                    _raportowaniePostepuLabel.Status.Report("Odczytuję dane");
+                    string wiadomosc = "";
+                    bool czyUdane = false;
+                    await Task.Run(() =>
+                    {
+                        if (przygotujDane.Algorytm == RodzajAlgorytmu.Standard)
                         {
-                            if (przygotujDane.Algorytm == RodzajAlgorytmu.Standard)
-                            {
-                                _kontrolaProcesuUkrywania.KontrolaUkrywaniaStandard(obraz, przygotujDane, _raportowaniePostepuLabel);
-                            }
-                            else
-                            {
-                                _kontrolaProcesuUkrywania.KontrolaUkrywaniaLosowa(obraz, przygotujDane, _raportowaniePostepuLabel);
-                            }
-                            _obslugaPlikow.ZapisNowegoObrazka(obraz, przygotujDane.SciezkaDoZapisu);
-                            _raportowaniePostepuLabel.Status.Report(StaleKomunikatow.NowePolecenie);
-                            MessageBox.Show("Obraz zapisany");
-                            return;
+                            var wynik = _kontrolaProcesuUkrywania.KontrolaOdczytuStandard(obraz, _raportowaniePostepuLabel);
+                            wiadomosc = wynik.Komunikat;
+                            czyUdane = wynik.Success;
                         }
                         else
                         {
-                            _raportowaniePostepuLabel.Status.Report("Odczytuję dane");
-                            string wiadomosc = "";
-                            bool czyUdane = false;
-                            if (przygotujDane.Algorytm == RodzajAlgorytmu.Standard)
-                            {
-                                var wynik = _kontrolaProcesuUkrywania.KontrolaOdczytuStandard(obraz, _raportowaniePostepuLabel);
-                                wiadomosc = wynik.Komunikat;
-                                czyUdane = wynik.Success;
-                            }
-                            else
-                            {
-                                var wynik = _kontrolaProcesuUkrywania.KontrolaOdczytuLosowo(obraz, przygotujDane, _raportowaniePostepuLabel);
-                                wiadomosc = wynik.Komunikat;
-                                czyUdane = wynik.Success;
-                            }
-                            _raportowaniePostepuLabel.Status.Report(StaleKomunikatow.NowePolecenie);
-                            if (czyUdane)
-                            {
-                                _zarzadzanieGui.PrzypiszWartoscWiadomoscTextBox(wiadomosc);
-                                MessageBox.Show("Wiadomość odczytana");
-                                return;
-                            }
-                            else
-                            {
-                                MessageBox.Show(wiadomosc);
-                                return;
-                            }
+                            var wynik = _kontrolaProcesuUkrywania.KontrolaOdczytuLosowo(obraz, przygotujDane, _raportowaniePostepuLabel);
+                            wiadomosc = wynik.Komunikat;
+                            czyUdane = wynik.Success;
                         }
+                    });
+                    _raportowaniePostepuLabel.Status.Report(StaleKomunikatow.NowePolecenie);
+                    if (czyUdane)
+                    {
+                        _zarzadzanieGui.PrzypiszWartoscWiadomoscTextBox(wiadomosc);
+                        MessageBox.Show("Wiadomość odczytana");
+                        return;
                     }
+                    MessageBox.Show(wiadomosc);
+                    return;
                 }
             }
             catch (BladOperacjiException ex)
@@ -139,12 +138,16 @@ namespace UkrywanieWiadomosci
                 _raportowaniePostepuLabel.Status.Report(StaleKomunikatow.PoprawaDanych);
                 MessageBox.Show(ex.Message);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //Do podglądu błędu
                 Debug.WriteLine(ex);
                 _raportowaniePostepuLabel.Status.Report(StaleKomunikatow.PoprawaDanych);
                 MessageBox.Show("Wystąpił błąd krytyczny, spróbuj ponownie");
+            }
+            finally
+            {
+                _wskaznikiGUI.UstawAktywnosc(true);
             }
         }
 
@@ -165,6 +168,10 @@ namespace UkrywanieWiadomosci
             _wskaznikiGUI.Ustaw(EnumDoGUI.IdRadioBox.OdczytacRadioBox, this.OdczytacRadioBox);
             _wskaznikiGUI.Ustaw(EnumDoGUI.IdRadioBox.StandardRadioBox, this.StandardRadioBox);
             _wskaznikiGUI.Ustaw(EnumDoGUI.IdRadioBox.LosowyRadioBox, this.LosowyRadioBox);
+            //button
+            _wskaznikiGUI.Ustaw(EnumDoGUI.IdButton.RozpocznijButton, this.RozpocznijButton);
+            _wskaznikiGUI.Ustaw(EnumDoGUI.IdButton.WyborSciezkiZapisuButton, this.WyborSciezkiZapisuButton);
+            _wskaznikiGUI.Ustaw(EnumDoGUI.IdButton.WyborPNGButton, this.WyborPNGButton);
         }
     }
 
