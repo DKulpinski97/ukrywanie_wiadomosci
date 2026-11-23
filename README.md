@@ -6,6 +6,7 @@ Aplikacja desktopowa (WPF, .NET 10) do ukrywania wiadomości tekstowej w obrazie
 
 - Ukrywanie tekstu (UTF-8, polskie znaki) w obrazie PNG i zapis wyniku jako `NowyObraz.png` w wybranym folderze.
 - Odczyt wiadomości z obrazu przygotowanego tym programem.
+- Obsługa PNG z przezroczystością: obraz jest wczytywany bez komponowania na tle, więc kanał alfa i ukryte bity zostają zachowane także w pikselach półprzezroczystych i całkowicie przezroczystych (sprawdzone testem zapisu i wczytania obrazu z alfą od 0 do 255).
 - Tryb standardowy: kolejne bity w najmłodszym bicie kanału czerwonego kolejnych pikseli.
 - Tryb losowy: położenie bitów (piksel i kanał R/G/B) wyznaczane z klucza tekstowego (seed).
 - Pasek statusu i licznik postępu w trakcie pracy; okno pozostaje responsywne.
