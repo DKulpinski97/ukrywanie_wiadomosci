@@ -117,22 +117,23 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola
                     Color pixel = obraz.GetPixel(x, y);
                     int zmodyfikowanaWartoscRed = (pixel.R & 0xFE) | int.Parse(calaWiadomosc[indeks++]);
 
-
-                    if (indeks >= oczekiwanyIndeks || indeks == max)
-                    {
-                        oczekiwanyIndeks += krok;
-                        raportery.KtoryBit.Report($"{indeks}/{max}");
-                    }
-
                     obraz.SetPixel(x, y, Color.FromArgb(
                         pixel.A,
                         zmodyfikowanaWartoscRed,
                         pixel.G,
                         pixel.B
                     ));
+
+
+                    if (indeks >= oczekiwanyIndeks || indeks == max)
+                    {
+                        oczekiwanyIndeks += krok;
+                        raportery.KtoryBit.Report($"{indeks}/{max}");
+                    }
                 }
             }
         }
+
         private int OdczytajIleZnakow(Bitmap obraz)
         {
             int dlugosc = 0;
