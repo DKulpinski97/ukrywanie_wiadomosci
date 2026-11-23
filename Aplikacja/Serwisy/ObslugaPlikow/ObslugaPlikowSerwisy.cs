@@ -31,7 +31,6 @@ namespace UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow
             {
                 using var stream = new MemoryStream(bytes);
                 using var temp = System.Drawing.Image.FromStream(stream, true, true);
-
                 return KopiujBezKomponowania((Bitmap)temp);
             }
             catch (Exception ex)
