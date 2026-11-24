@@ -1,8 +1,10 @@
 ﻿using Moq;
 using System.Drawing;
+using UkrywanieWiadomosci.Aplikacja.Interfejsy.Weryfikatory;
 using UkrywanieWiadomosci.Aplikacja.Model;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow;
+using UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory;
 
 namespace UkrywanieWiadomosci.Testy.Aplikacja.Serwisy.Kontrola
 {
@@ -86,6 +88,39 @@ namespace UkrywanieWiadomosci.Testy.Aplikacja.Serwisy.Kontrola
                 {
                     Directory.Delete(katalogTymczasowy, true);
                 }
+            }
+        }
+        [Theory]
+        [InlineData(4, true)]
+        [InlineData(5, false)]
+        public void WeryfikacjaDanychPoczatkowych_Losowy_Pojemnosc(int liczbaBajtow,bool oczekiwanyWynik)
+        {
+            // Arrange
+            using var bitmap = new Bitmap(48, 4);
+
+            var dane = new DanePoczatkowe(
+                SciezkaDoPNG: "bitmapa_48x4.png",
+                SciezkaDoZapisu: Path.Combine(
+                    Path.GetTempPath(),
+                    Guid.NewGuid().ToString()),
+                Wiadomosc: new string('a', liczbaBajtow),
+                Seed: "cos",
+                Algorytm: RodzajAlgorytmu.Losowy,
+                Proces: CoRobic.Ukryj);
+
+            WeryfikacjaDanychSerwisy weryfikacjaDanych =new WeryfikacjaDanychSerwisy();
+
+            // Act
+            var wynik = weryfikacjaDanych.WeryfikacjaDanychPoczatkowych(bitmap, dane);
+
+            // Assert
+            Assert.Equal(oczekiwanyWynik, wynik.Success);
+
+            if (!oczekiwanyWynik)
+            {
+                Assert.Equal(
+                    "Obrazek jest za mały by ukryć wiadomość",
+                    wynik.Komunikat);
             }
         }
 
