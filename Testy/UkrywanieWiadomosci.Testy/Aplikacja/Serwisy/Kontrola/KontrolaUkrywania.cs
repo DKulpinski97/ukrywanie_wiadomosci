@@ -5,6 +5,7 @@ using UkrywanieWiadomosci.Aplikacja.Model;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.Kontrola;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.ObslugaPlikow;
 using UkrywanieWiadomosci.Aplikacja.Serwisy.Weryfikatory;
+using UkrywanieWiadomosci.Exceptions;
 
 namespace UkrywanieWiadomosci.Testy.Aplikacja.Serwisy.Kontrola
 {
@@ -123,6 +124,62 @@ namespace UkrywanieWiadomosci.Testy.Aplikacja.Serwisy.Kontrola
                     wynik.Komunikat);
             }
         }
+        [Fact]
+        public void WczytajObrazekPNG_GdyPlikNieIstnieje_RzucaBladOperacjiException()
+        {
+            // Arrange
+            var serwis = new ObslugaPlikowSerwisy();
+            string sciezka = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".png");
 
+            // Act
+            var wyjatek = Assert.Throws<BladOperacjiException>(
+                () => serwis.WczytajObrazekPNG(sciezka));
+
+            // Assert
+            Assert.Equal("Nie można odczytać pliku.", wyjatek.Message);
+            Assert.NotNull(wyjatek.InnerException);
+        }
+        [Fact]
+        public void KontrolaUkrywaniaStandard_Ukrywanie_RaportujePostep()
+        {
+            // Arrange
+            var kontrolaProcesu = new KontrolaProcesuUkrywaniaSerwis();
+            using var bitmap = new Bitmap(64, 2);
+
+            var dane = new DanePoczatkowe(
+                SciezkaDoPNG: string.Empty,
+                SciezkaDoZapisu: string.Empty,
+                Wiadomosc: "A",
+                Seed: string.Empty,
+                Algorytm: RodzajAlgorytmu.Standard,
+                Proces: CoRobic.Ukryj);
+
+            var statusMock = new Mock<IProgress<string>>();
+            var ktoryBitMock = new Mock<IProgress<string>>();
+
+            var raporty = new DaneRaportowaniaPostepu(
+                Status: statusMock.Object,
+                KtoryBit: ktoryBitMock.Object);
+
+            // 32 bity nagłówka + 1 bajt UTF-8 * 8 bitów
+            const int max = 32 + 8;
+             int krok = Math.Max(1, max / 100);
+
+            // Act
+            kontrolaProcesu.KontrolaUkrywaniaStandard(bitmap, dane, raporty);
+
+            // Assert
+            statusMock.Verify(
+                x => x.Report("Ukrywam wiadomość"),
+                Times.Once);
+
+            ktoryBitMock.Verify(
+                x => x.Report($"{max}/{max}"),
+                Times.Once);
+
+            ktoryBitMock.Verify(
+                x => x.Report(It.IsAny<string>()),
+                Times.Exactly((int)Math.Ceiling((double)max / krok)));
+        }
     }
 }
